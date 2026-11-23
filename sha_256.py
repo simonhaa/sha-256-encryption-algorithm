@@ -45,3 +45,12 @@ H_INIT = [int((p ** 0.5 % 1) * 2**32) for p in PRIMES[:8]]
 # First 64 bits of the fractional parts of the cube root of the first 64 prime numbers
 K = [int((p ** (1/3) % 1) * 2**32) for p in PRIMES]
 
+# Padded message must be a multiple of 512 bits
+# Padding rule, defined in Sec. 5.1.1
+# l + 1 + k = 448 mod 512
+def pad(msg: bytes) -> bytes:
+    bit_len = len(msg) * 8      # stores msg length in bits
+    msg += b'\x80'              # adds 1 byte
+    msg += b'\x00' * ((56 - len(msg)) % 64) # appends '0' bytes until length is 56 mod 64 (leaves 8 bytes for the length field)
+                                            # if msg is already past byte 56, handled by mod 64 (pushes into next block)
+    return msg + bit_len.to_bytes(8, 'big') # 
