@@ -76,13 +76,14 @@ def sha256(msg: bytes) -> bytes:
             e = (d + t1) & MASK
             d, c, b = c, b, a
             a = (t1 + t2) & MASK
-            # Uncomment per-round print and check against simulation waveform
-            # print(i, [f"{v:08x}" for v in (a, b, c, d, e, f, g, h)])
+            # Use to check against simulation waveform
+            print(i, [f"{v:08x}" for v in (a, b, c, d, e, f, g, h)])
 
         # After 64 rounds, adds the working variables back into the old hash state
         # zip pairs up x (old H[j]) and y (matching working variable)
         H = [(x + y) & MASK for x, y in zip(H, (a, b, c, d, e, f, g, h))]
 
+    # Converts each of the 8 words into 4 big-endian bytes and concatenates them, giving the 256-bit digest
     return b''.join(x.to_bytes(4, 'big') for x in H)
 
 # Verify against the standard library
